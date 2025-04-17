@@ -1,23 +1,18 @@
-import java.lang.String
-import kotlin.Int
-import kotlin.arrayOfNulls
-
-internal class Solution {
-    fun convert(s: String, numRows: Int): String? {
+class Solution {
+    public String convert(String s, int numRows) {
         if (numRows == 1) {
-            return s
+            return s;
         }
-        val g = arrayOfNulls<StringBuilder>(numRows)
-        Arrays.setAll(g, { k -> StringBuilder() })
-        var i = 0
-        var k = -1
-        for (c in s.toCharArray()) {
-            g[i].append(c)
+        StringBuilder[] g = new StringBuilder[numRows];
+        Arrays.setAll(g, k -> new StringBuilder());
+        int i = 0, k = -1;
+        for (char c : s.toCharArray()) {
+            g[i].append(c);
             if (i == 0 || i == numRows - 1) {
-                k = -k
+                k = -k;
             }
-            i += k
+            i += k;
         }
-        return String.join("", *g)
+        return String.join("", g);
     }
 }

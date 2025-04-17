@@ -1,24 +1,23 @@
-internal class Solution {
-    fun longestPalindrome(s: String): String {
-        val n = s.length
-        val f = Array<BooleanArray?>(n) { BooleanArray(n) }
-        for (g in f) {
-            Arrays.fill(g, true)
+class Solution {
+    public String longestPalindrome(String s) {
+        int n = s.length();
+        boolean[][] f = new boolean[n][n];
+        for (var g : f) {
+            Arrays.fill(g, true);
         }
-        var k = 0
-        var mx = 1
-        for (i in n - 2 downTo 0) {
-            for (j in i + 1..<n) {
-                f[i]!![j] = false
-                if (s.get(i) == s.get(j)) {
-                    f[i]!![j] = f[i + 1]!![j - 1]
-                    if (f[i]!![j] && mx < j - i + 1) {
-                        mx = j - i + 1
-                        k = i
+        int k = 0, mx = 1;
+        for (int i = n - 2; i >= 0; --i) {
+            for (int j = i + 1; j < n; ++j) {
+                f[i][j] = false;
+                if (s.charAt(i) == s.charAt(j)) {
+                    f[i][j] = f[i + 1][j - 1];
+                    if (f[i][j] && mx < j - i + 1) {
+                        mx = j - i + 1;
+                        k = i;
                     }
                 }
             }
         }
-        return s.substring(k, k + mx)
+        return s.substring(k, k + mx);
     }
 }

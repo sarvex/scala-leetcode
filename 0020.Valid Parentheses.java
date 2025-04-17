@@ -1,17 +1,17 @@
-internal class Solution {
-    fun isValid(s: String): Boolean {
-        val stk: Deque<Char?> = ArrayDeque()
-        for (c in s.toCharArray()) {
+class Solution {
+    public boolean isValid(String s) {
+        Deque<Character> stk = new ArrayDeque<>();
+        for (char c : s.toCharArray()) {
             if (c == '(' || c == '{' || c == '[') {
-                stk.push(c)
+                stk.push(c);
             } else if (stk.isEmpty() || !match(stk.pop(), c)) {
-                return false
+                return false;
             }
         }
-        return stk.isEmpty()
+        return stk.isEmpty();
     }
 
-    private fun match(l: Char, r: Char): Boolean {
-        return (l == '(' && r == ')') || (l == '{' && r == '}') || (l == '[' && r == ']')
+    private boolean match(char l, char r) {
+        return (l == '(' && r == ')') || (l == '{' && r == '}') || (l == '[' && r == ']');
     }
 }

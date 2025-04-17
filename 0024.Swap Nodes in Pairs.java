@@ -1,22 +1,22 @@
 /**
  * Definition for singly-linked list.
  * public class ListNode {
- * int val;
- * ListNode next;
- * ListNode() {}
- * ListNode(int val) { this.val = val; }
- * ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
  * }
  */
-internal class Solution {
-    fun swapPairs(head: ListNode?): ListNode? {
+class Solution {
+    public ListNode swapPairs(ListNode head) {
         if (head == null || head.next == null) {
-            return head
+            return head;
         }
-        val t: ListNode? = swapPairs(head.next.next)
-        val p: ListNode = head.next
-        p.next = head
-        head.next = t
-        return p
+        ListNode t = swapPairs(head.next.next);
+        ListNode p = head.next;
+        p.next = head;
+        head.next = t;
+        return p;
     }
 }

@@ -1,7 +1,21 @@
-Get-ChildItem -Filter *.md -Recurse | Remove-Item
+# Remove all files except JS and TS files
+Get-ChildItem -Path . -Recurse -File | Where-Object { $_.Extension -notin ".java",".scala" } | Remove-Item -Force
 
-Get-ChildItem -Filter *.scala -Recurse | Rename-Item -NewName { $_.Directory.Name+'.scala'}
-Get-ChildItem -Filter *.scala -Recurse | Move-Item -Destination { $_.Directory.Parent.FullName }
+# Function to process code files
+function Process-Files($extension) {
+    Get-ChildItem -Path . -Recurse -Filter "*$extension" -File | ForEach-Object {
+        $parentDirName = Split-Path (Split-Path $_.Directory -Parent) -Leaf
+        $targetDir = Split-Path (Split-Path (Split-Path $_.Directory -Parent) -Parent) -Parent
+        $newPath = Join-Path $targetDir "$parentDirName.js"
 
-Get-ChildItem -Filter *.java -Recurse | Rename-Item -NewName { $_.Directory.Name+'.java'}
-Get-ChildItem -Filter *.java -Recurse | Move-Item -Destination { $_.Directory.Parent.FullName }
+        if (-not (Test-Path $newPath)) {
+            Move-Item $_.FullName $newPath
+        }
+    }
+}
+
+# Process both file types
+Process-Files ".java"
+Process-Files ".scala"
+
+Write-Output "Setup completed successfully!"
