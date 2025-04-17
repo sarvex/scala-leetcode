@@ -1,31 +1,31 @@
 /**
  * Definition for singly-linked list.
  * public class ListNode {
- *     int val;
- *     ListNode next;
- *     ListNode() {}
- *     ListNode(int val) { this.val = val; }
- *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * int val;
+ * ListNode next;
+ * ListNode() {}
+ * ListNode(int val) { this.val = val; }
+ * ListNode(int val, ListNode next) { this.val = val; this.next = next; }
  * }
  */
-class Solution {
-    public ListNode mergeKLists(ListNode[] lists) {
-        PriorityQueue<ListNode> pq = new PriorityQueue<>((a, b) -> a.val - b.val);
-        for (ListNode head : lists) {
+internal class Solution {
+    fun mergeKLists(lists: Array<ListNode?>): ListNode {
+        val pq: PriorityQueue<ListNode?> = PriorityQueue({ a, b -> a.`val` - b.`val` })
+        for (head in lists) {
             if (head != null) {
-                pq.offer(head);
+                pq.offer(head)
             }
         }
-        ListNode dummy = new ListNode();
-        ListNode cur = dummy;
+        val dummy: ListNode = ListNode()
+        var cur: ListNode = dummy
         while (!pq.isEmpty()) {
-            ListNode node = pq.poll();
+            val node: ListNode = pq.poll()
             if (node.next != null) {
-                pq.offer(node.next);
+                pq.offer(node.next)
             }
-            cur.next = node;
-            cur = cur.next;
+            cur.next = node
+            cur = cur.next
         }
-        return dummy.next;
+        return dummy.next
     }
 }

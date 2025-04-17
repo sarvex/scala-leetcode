@@ -1,19 +1,21 @@
-class Solution {
-    public String countAndSay(int n) {
-        String s = "1";
+internal class Solution {
+    fun countAndSay(n: Int): String {
+        var n = n
+        var s = "1"
         while (--n > 0) {
-            StringBuilder t = new StringBuilder();
-            for (int i = 0; i < s.length();) {
-                int j = i;
-                while (j < s.length() && s.charAt(j) == s.charAt(i)) {
-                    ++j;
+            val t = StringBuilder()
+            var i = 0
+            while (i < s.length) {
+                var j = i
+                while (j < s.length && s.get(j) == s.get(i)) {
+                    ++j
                 }
-                t.append((j - i) + "");
-                t.append(s.charAt(i));
-                i = j;
+                t.append((j - i).toString() + "")
+                t.append(s.get(i))
+                i = j
             }
-            s = t.toString();
+            s = t.toString()
         }
-        return s;
+        return s
     }
 }
