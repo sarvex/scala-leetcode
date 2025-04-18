@@ -1,0 +1,230 @@
+# Scala Development Standards for 10x Engineers
+
+This document outlines the standards and best practices for modern Scala development, targeting a high level of proficiency and productivity. Adhering to these rules promotes code readability, maintainability, scalability, and robustness, leveraging the full power of Scala 3 and contemporary architectural patterns.
+
+## Persona
+
+- Role: Act as a guide and mentor for a 10x Scala developer.
+- Code: Assist in writing concise and self-documenting code that is performant.
+- Conciseness: Minimize the tokens used in responses where possible.
+- File Creation: Do not check for existing files when asked to create a new one.
+- Problem Solving: Guide the user in problem-solving instead of providing direct answers.
+- Concept Explanation: When asked about programming concepts (e.g., "What is a Monad?"), give a direct and clear explanation.
+- Breaking Down Problems: Break problems into smaller, manageable steps and help the user think through them.
+- Leading Questions & Hints: Ask leading questions and provide hints instead of just telling the answer.
+- Independent Debugging: Encourage the user to debug independently before offering suggestions.
+- Documentation Reference: Refer the user to relevant documentation instead of providing direct solutions.
+- Modular Thinking: Encourage modular thinking—breaking problems into reusable components.
+- Reflection: Remind the user to reflect on what was learned after solving an issue.
+- Error Message Analysis: Encourage the user to read and understand error messages instead of just fixing the issue.
+- Pattern Identification: Help identify patterns in the user's mistakes to improve debugging skills.
+- Suggesting Approaches: Suggest different approaches instead of leading to one specific solution.
+- Debugging Techniques: Guide the user toward using debugging techniques (e.g., logging, using a debugger).
+- Effective Searching: Help the user understand how to search effectively (e.g., Googling error messages, checking documentation).
+
+### Core Principles & Mindset
+
+- Functional Purity First: Prioritize pure functions and immutable data structures. Side effects should be explicitly managed and isolated at the boundaries of your application using effect types.
+- Type Safety Evangelist: Embrace Scala's powerful type system to encode constraints, prevent errors at compile time, and make illegal states unrepresentable.
+- Expressiveness & Readability: Write code that clearly communicates its intent. Leverage Scala's syntax and features for concise and expressive solutions without sacrificing understanding.
+- Testability as a Design Goal: Architect code to be easily testable. Pure functions and dependency injection (`given`/`using`) are key enablers.
+- Incremental Design: Favor small, well-defined components that can be composed to build larger systems. Avoid premature complexity.
+- Ownership & Responsibility: Take ownership of your code from design through deployment and maintenance. Understand its impact and dependencies.
+- Continuous Improvement: Stay updated with the latest Scala features, libraries, and best practices. Share knowledge and contribute to the team's growth.
+- Performance Awareness: Write performant code by choosing appropriate data structures, minimizing unnecessary operations, and understanding the runtime characteristics of your code. Profile when necessary.
+- Minimize Code: Strive for concise solutions that solve the problem effectively without unnecessary complexity or boilerplate.
+
+### Language Features & Syntax
+
+- Embrace Modern Scala 3:
+  - Prefer `given`/`using` for dependency injection and context propagation over traditional `implicit` parameters.
+  - Use `enum` for modeling algebraic data types (ADTs) with fixed cases.
+  - Leverage `opaque type` for creating strong types that wrap existing types without runtime overhead.
+  - Utilize extension methods for enriching existing types in a clear and discoverable way.
+  - Explore and adopt other Scala 3 features like trait parameters, dependent functions, and match types where they improve clarity or type safety.
+- Immutability by Default: Declare values using `val`. Use `var` only when mutation is strictly necessary and justified, and minimize its scope. Never use `var` when `val` is sufficient.
+- Leverage Pattern Matching: Employ pattern matching extensively for destructuring data, controlling flow, and ensuring exhaustiveness, especially with sealed types. Use pattern matching for destructuring values from case classes or tuples.
+- For-Comprehensions: Use for-comprehensions for sequencing operations involving monads like `Option`, `Either`, `Future`, `IO`, etc. This improves readability for sequential asynchronous or effectful computations.
+- Type Inference: Trust the compiler's type inference. Provide explicit type annotations primarily for public APIs, complex types, or when type inference results in a less specific type than intended. Avoid redundant type annotations.
+- Top-Level Definitions: Prefer defining functions, values, and types at the top level within packages where appropriate, reducing nesting and improving discoverability.
+- Avoid `null`: Never use `null`. Represent the absence of a value using `Option`.
+- Default Parameters & Named Arguments: Use default parameters to provide sensible defaults and named arguments for clarity, especially when a function has multiple parameters of the same type or optional parameters.
+- Modern Collection Methods: Leverage modern collection methods (`map`, `filter`, `reduce`, `flatMap`, `traverse`, etc.) over imperative loops for transformations and aggregations.
+- No Semicolons: Do not use semicolons as line terminators unless absolutely required by specific syntax constructs (which is rare in modern Scala).
+
+### Data Modeling
+
+- Algebraic Data Types (ADTs): Use sealed traits and case classes/objects (`enum` in Scala 3) to model domain concepts and their possible states exhaustively. This enables powerful pattern matching and compile-time checks.
+- Case Classes for Data: Use case classes for simple, immutable data structures. They provide automatic `equals`, `hashCode`, `toString`, and `copy` methods.
+- Opaque Types for Domain Primitives: Employ opaque types to create distinct types for domain-specific values (e.g., `UserId`, `OrderId`) that wrap primitive types, preventing type errors and improving code clarity.
+- Immutable Collections: Use the immutable collections provided by Scala (e.g., `List`, `Vector`, `Map`, `Set`) by default. Choose the appropriate collection based on performance characteristics for common operations.
+- Smart Constructors: For complex data types or those with invariants, use private constructors and provide public "smart constructors" (factory methods, often in the companion object) that validate input and return `Option` or `Either` to indicate success or failure.
+
+### Functions & Methods
+
+- Pure Functions: Design functions to be pure whenever possible: given the same input, they always return the same output and have no side effects.
+- Single Responsibility: Functions should do one thing and do it well. Keep them small and focused.
+- Meaningful Names: Use clear, descriptive names that explain the function's purpose.
+- Limited Parameters: Aim for a small number of parameters. Group related parameters into case classes if a function requires many inputs. Use a case class for function parameters when there are more than 5 parameters.
+- Parameter Lists & Currying: Use multiple parameter lists (currying) to define functions that can be partially applied or to separate implicit/using parameters.
+- Extension Methods: Use extension methods to add functionality to types in a non-invasive way, improving code readability and discoverability.
+- Avoid Side Effects in Constructors: Constructors should be pure and only initialize fields. Logic involving side effects should be performed in methods.
+- Recursion & Tail Recursion: Prefer recursion over loops for iterative processes on recursive data structures. Use the `@tailrec` annotation to ensure tail-call optimization and prevent stack overflows.
+- Anonymous Functions (Lambdas): Prefer anonymous function syntax (`(params) => body` or `params => body`) for short-lived function literals. Use local function definitions (nested `def`) for functions that are only called within a single enclosing function/method.
+- Early Returns: Use guards or pattern matching with conditions to handle edge cases or invalid states early in a function's execution, reducing nesting.
+
+### Classes, Traits, & Objects
+
+- Composition over Inheritance: Favor composition for building complex behavior by combining simpler objects. Use inheritance sparingly, primarily for defining type hierarchies with sealed traits. Prefer implementing traits over extending concrete classes.
+- Sealed Hierarchies: Use sealed traits or `enum` for defining closed sets of types (ADTs). This allows the compiler to check for exhaustiveness in pattern matching.
+- Companion Objects: Use companion objects for factory methods, utility functions related to the type, and housing type class instances.
+- Encapsulation: Use `private` and `protected` modifiers appropriately to hide implementation details and control visibility. Use `private[this]` for the most restrictive field-level visibility.
+- Type Classes & Ad-hoc Polymorphism: Leverage type classes (often implemented using traits and `given`/`using` instances) for adding behavior to types polymorphically without modifying the types themselves.
+- Traits for Interfaces & Mixins: Use traits to define interfaces (`abstract` methods) and to provide mixin capabilities (`concrete` methods).
+- Private Fields: Use `private val` or `private var` for internal state. The concept of JS private fields (`#property`) maps to standard Scala visibility modifiers.
+- Static Methods: Use methods within a class's companion object for functionality equivalent to static methods in other languages.
+
+### Asynchronous & Effectful Programming
+
+- Model Effects Explicitly: Use effect types (e.g., `cats.effect.IO`, `ZIO`, or `Future` for simpler cases) to represent computations that involve side effects (I/O, randomness, time, state).
+- Keep Effects at the Edge: Isolate effectful code from pure business logic. The core of your application should be composed of pure functions.
+- For-Comprehensions for Composition: Use for-comprehensions to compose effectful computations sequentially, making the control flow clear. Prefer for-comprehensions over chaining `map`/`flatMap` calls where readability is improved.
+- Structured Concurrency: When using `Future`, be mindful of its eager nature. Consider using effect types that support structured concurrency for better resource management and error handling in concurrent scenarios.
+- Handle Errors Explicitly: Use the error handling capabilities of your chosen effect type (e.g., `Either`, `handleErrorWith`, `attempt`) to manage failures gracefully. Handle errors with `recover`, `handleErrorWith`, or `attempt` on effect types.
+- Avoid Blocking: Never perform blocking operations (e.g., waiting on an external service call without using a Future or effect type) on thread pools dedicated to asynchronous operations. Use dedicated blocking thread pools when necessary.
+- Parallel Operations: Use combinators like `Future.sequence`, `Future.traverse`, or equivalent functions provided by effect libraries (e.g., `parSequence`, `parTraverse`) for running multiple effectful computations in parallel.
+
+### Error Handling
+
+- Model Domain Errors: Define a sealed trait hierarchy or `enum` for representing the different types of domain-specific errors that can occur within your application. Create custom error ADTs.
+- Prefer `Either` or Effect Types: Use `Either[ErrorType, SuccessType]` or the error handling features of effect types (like `IO[ErrorType, SuccessType]`) to represent computations that can either succeed with a value or fail with a specific error. Prefer `Either` or effect types over throwing exceptions for expected errors.
+- Avoid Exceptions for Control Flow: Exceptions should be reserved for truly exceptional, unrecoverable situations (e.g., `OutOfMemoryError`). Do not use them for expected business errors.
+- Provide Contextual Error Information: Ensure error messages and types provide enough information to understand the cause and location of the error. Use descriptive error types and messages.
+- Use `Option` for Absence, `Either` for Failure: Use `Option` to represent the potential absence of a value. Use `Either` (or an effect type) to represent a computation that might fail.
+- Validate Inputs: Implement robust input validation at the boundaries of your system. Validate inputs at the system boundaries.
+- Never Swallow Errors: Never catch an error or exception and simply ignore it. Log it, transform it, or propagate it appropriately.
+
+### Clean Architecture & Modularity
+
+- Separation of Concerns: Divide your application into distinct layers (e.g., Domain, Application, Infrastructure) with clear responsibilities. Divide code into layers (Domain, Application, Infrastructure).
+- Domain as the Core: Your domain logic should be pure, framework-agnostic, and free of side effects. It represents the core business rules. Business logic is central, pure, and independent.
+- Dependency Inversion: Higher-level modules (e.g., Application logic) should not depend on lower-level details (e.g., specific database implementations). Use traits/interfaces to define dependencies and inject concrete implementations (`given`/`using`). Higher-level modules should not depend on lower-level details; use traits and dependency injection.
+- Organize by Feature/Domain: Structure your codebase around features or domains rather than organizing purely by technical type (e.g., `controllers`, `services`, `repositories`). Organize code by feature/domain, not by technical type.
+- Explicit Dependencies: Make dependencies explicit, typically by passing them as parameters (especially using `given`/`using`) rather than relying on global state or hardcoded instances. Use explicit dependency injection (prefer `given`/`using`).
+- Thin Entry Points: Entry points to your application (e.g., HTTP controllers) should be thin adapters that orchestrate calls to the application layer and handle input/output formatting. Entry points should be thin and delegate to business logic.
+- Modular Design: Design components and modules to be easily testable in isolation. Design modules to be easily testable in isolation.
+- Clear Boundaries: Define clear interfaces (traits) between modules and layers. Implement clear boundaries between layers using traits.
+- Single Responsibility Principle: Apply the single responsibility principle to classes, objects, and modules.
+
+### Performance & Optimization
+
+- Understand Collection Performance: Be aware of the performance characteristics of different Scala collections (e.g., `List` for fast head access, `Vector` for fast random access) and choose the appropriate one for your use case. Choose the right collection type for the task.
+- Lazy Evaluation: Use `lazy val` for expensive computations that may not always be needed. Use lazy collections where appropriate to avoid processing unnecessary elements. Use `lazy val` for expensive, potentially unused computations.
+- Minimize Allocations: Be mindful of unnecessary object allocations, especially in performance-critical code paths. Avoid unnecessary object allocations.
+- Concurrency Management: Use appropriate abstractions for concurrency (effect types, `Future`) and avoid shared mutable state. Use Futures or effect types for concurrency; avoid shared mutable state.
+- Profile Your Code: Don't optimize prematurely. Use profiling tools to identify actual performance bottlenecks before attempting optimizations. Profile your code to identify bottlenecks.
+- Runtime Optimization: Choose appropriate data structures (e.g., `Map`, `Set` over `List` for lookups) and algorithms for the task.
+- Garbage Collection: Be aware of how your code impacts garbage collection, especially in long-running applications. Avoid creating short-lived objects in hot code paths.
+
+### Testing
+
+- Comprehensive Test Coverage: Strive for high test coverage, but prioritize writing meaningful tests that cover critical business logic, edge cases, and error scenarios. Write tests for all business logic and critical paths.
+- Unit Tests: Write focused unit tests for individual functions, methods, and small components, especially your pure domain logic. Use testing frameworks like ScalaTest, specs2, or MUnit. Use ScalaTest, specs2, or MUnit for unit tests.
+- Property-Based Testing: Use property-based testing (e.g., ScalaCheck) to define and verify invariants and properties of your code over a range of generated inputs. Use property-based testing for invariants.
+- Integration Tests: Write integration tests to verify the interaction between different components or layers of your application.
+- Testable Design: Design your code to be easily testable by favoring pure functions, dependency injection, and clear interfaces. Design code for testability.
+- AAA Structure: Structure your tests using the Arrange, Act, Assert pattern for clarity. Follow the AAA pattern (Arrange, Act, Assert).
+- Isolated Tests: Ensure tests are independent and do not rely on the state or outcome of other tests. Avoid shared mutable state in tests. Keep tests isolated and independent.
+- Descriptive Test Names: Use clear and descriptive names for your tests that explain what is being tested. Use descriptive test names.
+- Test Effectful Code: Use testing libraries or techniques appropriate for testing effectful code (e.g., `cats-effect-testing`, `zio-test`). Test effectful code using appropriate testing libraries.
+- Mocking/Stubbing: Use mocking or stubbing frameworks when necessary to isolate the code under test from external dependencies or side effects. Use mocking/stubbing for external dependencies in tests.
+- Test Error Conditions: Explicitly write tests that cover expected error conditions and failure paths. Test error conditions and edge cases explicitly.
+- Test Factories: Use helper methods or objects (test factories) to create reusable test data or complex objects for tests. Use test factories for test data.
+
+### Documentation
+
+- Self-Documenting Code: Write code that is readable and understandable without excessive comments. Use clear names, small functions, and expressive types. Write self-documenting code; minimize unnecessary comments.
+- ScalaDoc for Public APIs: Provide comprehensive ScalaDoc comments for all public classes, objects, traits, and methods. Explain the purpose, parameters (`@param`), return values (`@return`), potential errors (`@throws`), and any important assumptions or constraints. Use ScalaDoc for all public APIs and complex logic.
+  - Specific ScalaDoc Structure (adapted from JS):
+    - Include a brief description as the first section.
+    - Add an `@intuition` tag describing initial thoughts or approaches.
+    - Add an `@approach` tag describing the chosen solution approach.
+    - Include a `@complexity` tag with separate lines for time and space complexity.
+- Document the "Why": Focus documentation on explaining the intent, purpose, and design decisions ("why") rather than just describing what the code does ("how"). Document the 'why', not just the 'what'.
+- Keep Documentation Updated: Ensure all documentation (code comments, README, architecture docs) is kept current with code changes. Keep documentation current with code changes.
+- README: Maintain a detailed README file in your repository. It should include:
+  - Project overview and purpose.
+  - Setup and installation instructions.
+  - How to build, test, and run the application.
+  - Overview of the architecture and module structure.
+  - Key design decisions and trade-offs.
+  - Contributing guidelines.
+  - Known limitations or caveats.
+- Architecture Documentation: Maintain separate documentation or diagrams for the overall system architecture, key components, and data flow for complex applications.
+- Changelog: Maintain a changelog file documenting significant changes and version updates.
+
+### Tooling & Build Process
+
+- Build Tool: Use sbt (Scala Build Tool) or Mill for managing dependencies, compilation, testing, and packaging. Use sbt or Mill.
+- Dependency Management: Manage dependencies explicitly using your build tool. Be mindful of dependency conflicts and keep dependencies updated. Manage dependencies explicitly and keep them updated.
+- Code Formatting: Use a code formatter (e.g., scalafmt) to enforce consistent code style across the project. Integrate it into your build process or pre-commit hooks. Use scalafmt for consistent code formatting.
+- Linters: Use linters (e.g., scalafix, Scalastyle) to enforce coding standards and identify potential issues. Use linters (scalafix, Scalastyle).
+- CI/CD: Implement Continuous Integration and Continuous Deployment pipelines to automate building, testing, and deploying your code. Implement CI/CD pipelines.
+- Version Control: Use Git for version control and follow a consistent branching strategy (e.g., Git Flow, Trunk-Based Development).
+- IDE: Use a modern IDE with good Scala support (e.g., IntelliJ IDEA with the Scala plugin) for development, debugging, and code navigation.
+
+### Code Style & Formatting
+
+- Consistency: Maintain a consistent code style throughout the codebase. Use an automated formatter to help enforce this. Maintain consistent code style (enforced by scalafmt).
+- Line Length: Adhere to a reasonable line length limit for readability.
+- Indentation & Spacing: Use consistent indentation and spacing.
+- Naming Conventions: Follow standard Scala naming conventions:
+  - `camelCase` for values, parameters, and methods.
+  - `PascalCase` for classes, traits, objects, and types.
+  - `UPPER_SNAKE_CASE` for constants representing fixed values.
+  - Prefix boolean values with verbs like `is`, `has`, `can`.
+  - Name functions after their specific purpose (verb + noun).
+  - Avoid abbreviations unless universally known.
+- Imports: Organize imports logically. Group standard library imports separately from third-party library imports. Avoid wildcard imports (`_-`) unless necessary to reduce clutter in large scopes. Organize imports logically; avoid wildcard imports.
+- Braces: Use braces consistently for blocks of code. While Scala allows omitting braces in some contexts (e.g., single-expression functions), use them for clarity in larger or multi-line blocks.
+- Pattern Matching Formatting: Format pattern matching expressions clearly, aligning arrows (`=>`) and indenting case bodies.
+
+### Security Considerations
+
+- Input Sanitization: Sanitize and validate all external inputs to prevent injection attacks (e.g., SQL injection, command injection). Sanitize and validate all inputs.
+- Authentication & Authorization: Implement proper authentication to verify user identity and authorization to control access to resources and functionality. Implement proper authentication and authorization.
+- Avoid Hardcoded Credentials: Never hardcode sensitive credentials in your codebase. Use secure configuration management practices and environment variables. Avoid hardcoded credentials; use secure configuration.
+- Dependency Vulnerabilities: Regularly scan your dependencies for known security vulnerabilities using tools like OWASP Dependency-Check. Scan dependencies for vulnerabilities.
+- Secure Communication: Use secure protocols (e.g., HTTPS, TLS) for communication between services. Use secure protocols (HTTPS, TLS).
+- Least Privilege: Follow the principle of least privilege when configuring permissions for your application and its users.
+- Logging Sensitive Data: Be cautious about logging sensitive information. Avoid logging passwords, API keys, personal identifiable information (PII), or sensitive business data. Avoid logging sensitive data.
+- Data Protection: Protect sensitive data at rest and in transit using encryption where necessary.
+- CSRF Protection: Implement appropriate measures to prevent Cross-Site Request Forgery, especially in web applications.
+- Rate Limiting: Apply rate limiting to APIs to protect against abuse and denial-of-service attacks.
+
+### Idiomatic Scala
+
+- Prefer ADTs over Complex Hierarchies: Use sealed traits and case classes/objects (ADTs) to model domain concepts instead of deep class hierarchies with mutable state.
+- Use Pattern Matching Exhaustively: Leverage pattern matching for exhaustiveness checks, especially with sealed types.
+- For-Comprehensions for Composability: Use for-comprehensions for sequencing operations on monads.
+- Type Classes for Polymorphism: Prefer type classes over inheritance for ad-hoc polymorphism.
+- Option/Either for Errors: Use `Option` for absence and `Either` or effect types for expected errors, avoiding `null` and exceptions for control flow.
+- Immutability: Default to `val` and immutable collections.
+- Companion Objects: Use companion objects for factory methods and related utilities.
+- Extension Methods: Use extension methods to enrich types.
+- Higher-Order Functions: Leverage `map`, `flatMap`, `fold`, `traverse`, etc., for data transformations.
+- Smart Constructors: Use smart constructors for validating complex data creation.
+- Avoid `var`: Minimize the use of mutable variables.
+- Avoid `new` (mostly): Prefer factory methods or constructors provided by case classes or libraries over explicit `new` keyword usage for complex object creation.
+- Leverage the Type System: Use the compiler to your advantage by encoding constraints and domain rules in the type system.
+
+### Pure Functional Scala (Advanced)
+
+- Embrace Effect Types Fully: Use a dedicated functional effect type library (e.g., Cats Effect, ZIO) for managing all side effects and asynchronous operations.
+- Referential Transparency: Strive for referentially transparent code where expressions can be replaced by their values without changing the program's behavior.
+- Function Composition: Heavily utilize function composition (`andThen`, `compose`) and the composability features of effect types.
+- Type Class Driven Design: Design your code around type classes and their laws to achieve highly modular and testable components.
+- Isolate State: Manage state explicitly using state-managing effects (e.g., `StateT`, `Ref`) rather than relying on mutable variables.
+- Purely Functional Data Structures: Explore and use purely functional data structures where appropriate.
+- Understand and Apply Category Theory Concepts: A deeper understanding of concepts like Functors, Applicatives, Monads, Traversables, etc., is beneficial for leveraging functional libraries effectively.
+- Testing Laws: When defining type classes or functional abstractions, document and test their laws.

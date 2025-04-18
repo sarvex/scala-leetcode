@@ -1,0 +1,214 @@
+# Scala Windsurf Rules
+
+This rules file defines standards for modern Scala development, adhering to the latest Scala language features, industry best practices, clean architecture principles, and self-documenting code conventions.
+
+## Syntax & Language Features
+
+### Use Modern Scala
+- Prefer Scala 3 features (given/using, enums, opaque types, extension methods)
+- Use immutable collections and values (`val`) by default; use `var` only when mutation is necessary
+- Use case classes for immutable data structures
+- Prefer pattern matching and destructuring for clarity
+- Use for-comprehensions for sequencing computations (especially with `Option`, `Either`, `Future`)
+- Leverage type inference and avoid redundant type annotations
+- Prefer top-level definitions and package objects over deep nesting
+
+### Variable Declarations
+- Use `val` for immutable values, `var` only when mutation is required
+- Prefer pattern matching for multiple assignments
+- Use default parameters and named arguments for clarity
+- Avoid null; use `Option` for optional values
+
+### Functions
+- Prefer pure functions and avoid side effects
+- Use anonymous functions (lambdas) for short-lived logic
+- Keep functions small and focused on a single responsibility
+- Use early returns to reduce nesting
+- Use parameter lists for dependencies (favor dependency injection)
+- Prefer extension methods for enriching types
+
+### Classes & Objects
+- Use case classes for data modeling
+- Prefer composition over inheritance
+- Use sealed traits for closed hierarchies
+- Leverage private and protected modifiers for encapsulation
+- Use companion objects for factory methods and utilities
+- Use implicit classes/type classes for ad-hoc polymorphism
+
+### Asynchronous & Effectful Code
+- Use `Future` or effect types (e.g., cats.effect.IO) for async operations
+- Prefer for-comprehensions for composing effects
+- Handle errors explicitly with `Try`, `Either`, or effect types
+- Avoid blocking operations in async code
+
+## Clean Code Principles
+
+### Naming
+- Use descriptive, intention-revealing names
+- camelCase for variables and methods, PascalCase for classes/traits/objects
+- UPPERCASE for constants
+- Avoid abbreviations unless universally known
+
+### Function Design
+- Functions should do one thing and do it well
+- Limit parameters (prefer case classes for grouping)
+- Avoid side effects; return new values instead of mutating state
+- Use recursion or higher-order functions over loops
+
+### Comments & Documentation
+- Write self-documenting code; minimize comments
+- Use ScalaDoc for public APIs and complex logic
+- Document the 'why', not the 'what'
+- Keep documentation updated
+
+## Clean Architecture
+
+### Module Structure
+- Organize code by feature/domain, not by type
+- Separate business logic from side effects (e.g., IO, DB)
+- Use dependency inversion for flexibility
+- Favor modular, testable components
+
+### Application Structure
+- Maintain clear boundaries between layers
+- Use unidirectional data flow
+- Apply single responsibility principle
+- Separate configuration from implementation
+
+### State Management
+- Prefer immutable state
+- Use ADTs (sealed traits + case classes) for state modeling
+- Isolate side effects
+- Use Option/Either for error and missing value handling
+
+## Performance & Optimization
+
+### Collection Performance
+- Choose the right collection type for the task (List, Vector, Map, Set)
+- Use lazy collections where appropriate
+- Avoid unnecessary allocations
+
+### Concurrency
+- Use Futures or effect types for concurrency
+- Avoid shared mutable state
+- Use proper synchronization primitives if necessary
+
+## Error Handling
+
+### Robust Error Management
+- Use sealed trait hierarchies for error types
+- Prefer `Either`, `Try`, or effect types for error handling
+- Provide descriptive error messages
+- Never swallow exceptions silently
+
+### Defensive Programming
+- Validate inputs
+- Use guards and pattern matching
+- Prefer total functions; handle all cases
+
+## Testing Standards
+
+### Test Coverage
+- Write unit tests for all business logic using ScalaTest or specs2
+- Use property-based testing for invariants
+- Test error conditions and edge cases
+
+### Test Structure
+- Use AAA pattern (Arrange, Act, Assert)
+- Keep tests isolated and independent
+- Use descriptive test names
+
+## Security Considerations
+
+### Secure Coding Practices
+- Sanitize inputs
+- Avoid unsafe reflection and dynamic code execution
+- Use proper authentication and authorization
+- Avoid storing sensitive data in plain text
+
+## Documentation
+
+### Code Documentation
+- Document public APIs with ScalaDoc
+- Include usage examples
+- Maintain a changelog and architecture notes
+
+### Repository Documentation
+- Maintain a comprehensive README
+- Document setup, development, and architecture decisions
+- Keep documentation current with code changes
+
+## Idiomatic Scala Rules
+
+- Prefer algebraic data types (sealed traits + case classes) for modeling closed sets of possibilities.
+- Use `Option`, `Either`, or custom ADTs instead of exceptions for expected error handling.
+- Avoid using null; embrace `Option` and safe alternatives.
+- Use pattern matching exhaustively—always cover all cases, even with a wildcard or `sealed` trait.
+- Prefer for-comprehensions for sequencing computations involving `Option`, `Either`, `Future`, or custom monads.
+- Use type classes and implicits for ad-hoc polymorphism; prefer context bounds for simple cases.
+- Avoid mutable state; if mutation is necessary, confine it to the smallest possible scope.
+- Use companion objects for constructors, factory methods, and type class instances.
+- Use extension methods (Scala 3) or implicit classes (Scala 2) to enrich types.
+- Prefer expressive, type-safe APIs—leverage the type system to prevent invalid states.
+- Use higher-order functions (`map`, `flatMap`, `fold`, etc.) over explicit recursion or loops.
+- Avoid side effects in constructors; use pure data structures and effectful computations for side effects.
+- Use `import` statements locally (inside methods or classes) to reduce scope and avoid namespace pollution.
+- Prefer `final` for classes that are not intended to be extended.
+- Use `private[this]` for the most restrictive visibility when possible.
+- Avoid “magic numbers” and hardcoded strings—use constants or enumerations.
+- Use `lazy val` for expensive computations that should only be evaluated once, when needed.
+- Prefer `Vector` or `List` for immutable sequences; use `Array` only for performance-critical code.
+- Use `Map` and `Set` from the immutable collections by default.
+- Leverage `@tailrec` annotation for recursive methods to ensure stack safety.
+- Use `Try` for exception-handling in effectful computations, but prefer `Either` or `Validated` for domain errors.
+- Prefer `def` for methods, `val` for constants, and `lazy val` for lazy initialization.
+
+## Pure Functional Scala Rules
+
+- Favor pure functions: every function should return the same output for the same input and have no side effects.
+- Avoid mutable state entirely—use only immutable data structures and values.
+- Model data with algebraic data types (sealed traits + case classes), not classes with mutable fields or inheritance.
+- Eliminate nulls; represent absence with `Option` and errors with `Either` or custom ADTs.
+- Use higher-order functions (`map`, `flatMap`, `fold`, `traverse`, etc.) for all data transformations.
+- Prefer function composition (`andThen`, `compose`, or chaining) over method calls on objects.
+- Use type classes and context bounds for polymorphism, not inheritance.
+- Pass dependencies explicitly as parameters (including type class instances), not via fields or constructors.
+- Use effect types (e.g., `cats.effect.IO`, `ZIO`, or `Future`) to model side effects; never perform effects directly.
+- Express all effects (I/O, randomness, time, state, etc.) in the type signature.
+- Prefer recursion and tail recursion over loops; use the `@tailrec` annotation for safety.
+- Use pattern matching and exhaustive case analysis for all ADTs.
+- Avoid constructors with logic or side effects; use pure factory functions.
+- Structure code as modules of functions and values, not as classes or objects with mutable state.
+- Use `val` and `def` for values and functions; avoid `var` and mutable collections.
+- Avoid the `new` keyword except for case classes or when required by libraries.
+- Use local imports and explicit dependencies to keep functions pure and testable.
+- Prefer referential transparency: replaceable expressions with their values without changing program behavior.
+- Use libraries like Cats, Cats Effect, or ZIO for functional abstractions and effect management.
+- Document laws and invariants for type classes and abstractions.
+
+## Testing Rules
+
+- All code must be accompanied by tests; never commit untested code.
+- Use property-based testing (e.g., ScalaCheck) to verify invariants and general properties.
+- Prefer pure functions for easy and reliable testing.
+- Use ScalaTest, MUnit, or specs2 for unit and integration tests.
+- Structure tests to follow the AAA pattern (Arrange, Act, Assert).
+- Keep tests isolated, independent, and deterministic; avoid shared mutable state.
+- Use descriptive, intention-revealing test names.
+- Test edge cases, boundary conditions, and error scenarios, not just the happy path.
+- Mock or stub external dependencies and side effects using appropriate libraries (e.g., Mockito, cats-effect-testing).
+- Write tests for type class laws and invariants where applicable.
+- Use fixtures and generators for reusable test data.
+- Prefer in-memory or embedded resources for integration tests.
+- Maintain high test coverage, but prioritize meaningful tests over coverage metrics.
+- Keep test code clean, readable, and as idiomatic as production code.
+- Test effectful code using effect-testing libraries (e.g., cats-effect-testing, zio-test).
+- Run tests automatically in CI/CD pipelines and before each commit.
+- Document known test limitations and expected failures.
+
+## Documentation Rules
+
+- Maintain a comprehensive README with setup instructions, development guidelines, and architecture decisions.
+- Document setup, development, and architecture decisions in README.
+- Keep documentation current with code changes.
+- Document known limitations and expected failures in README.
