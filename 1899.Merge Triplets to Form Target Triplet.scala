@@ -1,16 +1,15 @@
-object Solution {
-    def mergeTriplets(triplets: Array[Array[Int]], target: Array[Int]): Boolean = {
-        val Array(x, y, z) = target
-        var (d, e, f) = (0, 0, 0)
-        
-        for (Array(a, b, c) <- triplets) {
+class Solution {
+    public boolean mergeTriplets(int[][] triplets, int[] target) {
+        int x = target[0], y = target[1], z = target[2];
+        int d = 0, e = 0, f = 0;
+        for (var t : triplets) {
+            int a = t[0], b = t[1], c = t[2];
             if (a <= x && b <= y && c <= z) {
-                d = d.max(a)
-                e = e.max(b)
-                f = f.max(c)
+                d = Math.max(d, a);
+                e = Math.max(e, b);
+                f = Math.max(f, c);
             }
         }
-        
-        d == x && e == y && f == z
+        return d == x && e == y && f == z;
     }
 }

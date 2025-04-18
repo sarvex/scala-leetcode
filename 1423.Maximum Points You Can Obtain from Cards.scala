@@ -1,12 +1,14 @@
-object Solution {
-    def maxScore(cardPoints: Array[Int], k: Int): Int = {
-        val n = cardPoints.length
-        var s = cardPoints.takeRight(k).sum
-        var ans = s
-        for (i <- 0 until k) {
-            s += cardPoints(i) - cardPoints(n - k + i)
-            ans = ans.max(s)
+class Solution {
+    public int maxScore(int[] cardPoints, int k) {
+        int s = 0, n = cardPoints.length;
+        for (int i = n - k; i < n; ++i) {
+            s += cardPoints[i];
         }
-        ans
+        int ans = s;
+        for (int i = 0; i < k; ++i) {
+            s += cardPoints[i] - cardPoints[n - k + i];
+            ans = Math.max(ans, s);
+        }
+        return ans;
     }
 }

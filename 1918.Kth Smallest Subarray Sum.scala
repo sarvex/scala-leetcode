@@ -1,34 +1,31 @@
-object Solution {
-    def kthSmallestSubarraySum(nums: Array[Int], k: Int): Int = {
-        var l = Int.MaxValue
-        var r = 0
-        
-        for (x <- nums) {
-            l = l.min(x)
-            r += x
+class Solution {
+    public int kthSmallestSubarraySum(int[] nums, int k) {
+        int l = 1 << 30, r = 0;
+        for (int x : nums) {
+            l = Math.min(l, x);
+            r += x;
         }
-        
-        def f(s: Int): Int = {
-            var cnt = 0
-            var t = 0
-            var j = 0
-            
-            for (i <- nums.indices) {
-                t += nums(i)
-                while (t > s) {
-                    t -= nums(j)
-                    j += 1
-                }
-                cnt += i - j + 1
-            }
-            cnt
-        }
-        
         while (l < r) {
-            val mid = (l + r) / 2
-            if (f(mid) >= k) r = mid
-            else l = mid + 1
+            int mid = (l + r) >> 1;
+            if (f(nums, mid) >= k) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
         }
-        l
+        return l;
+    }
+
+    private int f(int[] nums, int s) {
+        int t = 0, j = 0;
+        int cnt = 0;
+        for (int i = 0; i < nums.length; ++i) {
+            t += nums[i];
+            while (t > s) {
+                t -= nums[j++];
+            }
+            cnt += i - j + 1;
+        }
+        return cnt;
     }
 }
